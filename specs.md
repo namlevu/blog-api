@@ -1,56 +1,18 @@
 
 
-| #  | API       | Method | input       | output     | note                           |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 01 | /hello    | POST   | client type | sessionId  | client type: app/web           |
-|    |           |        | version     | message    | version of app of web client   |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 02 | /login    | POST   | username    | login OK   | login                          |
-|    |           |        | password    | or NOK     |                                |
-|    |           |        | sessionId   |            |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 03 | /logout   | POST   | sessionId   | OK         | logout                         |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 04 | /users    | GET    | sessionId   | OK or NOK  | get all users. (pagination)    |
-|    |           |        | filter      | User list  |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 05 |           | POST   | sessionId   | OK or NOK  | add new user                   |
-|    |           |        | User object | User obj   |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 06 |           | PUT    | sessionId   | OK or NOK  | update user info               |
-|    |           |        | User object | User obj   |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 07 |           | DELETE | sessionId   | OK or NOK  | update user info               |
-|    |           |        | User object | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 08 | /users/id | GET    |             | OK or NOK  | get user info by id            |
-|    |           |        | User id     | User obj   |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 09 | /blogs    | GET    | sessionId   | OK or NOK  | filter ( author, date, cate)   |
-|    |           |        | filter      | blog list  |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 10 |           | POST   | sessionId   | OK or NOK  |                                |
-|    |           |        | Blog obj    | Blog obj   |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 11 |           | PUT    | sessionId   | OK or NOK  |                                |
-|    |           |        | Blog obj    | Blog obj   |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 12 |           | DELETE | sessionId   | OK or NOK  | update user info               |
-|    |           |        | User object | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 13 | /blogs/   | GET    | sessionId   | OK or NOK  | /blogs/<slug>/<id>             |
-|    |           |        | slug        | Blog obj   |                                |
-|    |           |        | blog id     | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
-| 14 | /bye      | POST   | sessionId   | OK or NOK  |                                |
-|    |           |        |             | message    |                                |
-| -- | --------- | ------ | ----------- | ---------- | ------------------------------ |
+| #  | API       | Method | Inputs       | Outputs     | Note                           |
+| -- | --------- | ------ | ------------ | ----------- | ------------------------------ |
+| 01 | /hello    | POST   | client type,<br>version | sessionId,<br>message  | client type: app/web. version of app of web client |
+| 02 | /login    | POST   | username,<br>password,<br>sessionId | message   | login|
+| 03 | /logout   | POST   | sessionId | message | logout |
+| 04 | /users    | GET    | sessionId,<br>filter   | User list,<br>message  | get all users. (pagination) |
+| 05 |           | POST   | sessionId,<br>User object | User obj,<br>message | add new user |
+| 06 |           | PUT    | sessionId,<br>User object | User obj,<br>message | update user info |
+| 07 |           | DELETE | sessionId,<br>User object | message  | update user info |
+| 08 | /users/id | GET    | sessionId,<br>User id | User obj,<br>message | get user info by id            |
+| 09 | /blogs    | GET    | sessionId,<br>filter | blog list,<br>message | filter ( author, date, category) |
+| 10 |           | POST   | sessionId,<br>Blog obj | Blog obj,<br>message ||
+| 11 |           | PUT    | sessionId,<br>Blog obj | Blog obj,<br>message ||
+| 12 |           | DELETE | sessionId,<br>Blog obj    | message | update user info |
+| 13 | /blogs/   | GET    | sessionId,<br>slug,<br>blog id | Blog obj,<br>message  | /blogs/slug/id |
+| 14 | /bye      | POST   | sessionId | message ||
