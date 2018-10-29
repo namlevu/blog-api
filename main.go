@@ -4,23 +4,16 @@ import (
   "fmt"
   "log"
   "net/http"
+//  "github.com/gorilla/mux"
+  "github.com/gorilla/handlers"
+  "pmapi/versionOne"
 )
 
-func logging(f http.HandlerFunc) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    log.Println("Logging start")
-    log.Println(r.URL.Path)
-    f(w, r)
-    log.Println("Logging end")
-  }
-}
-
-func authentication(f http.HandlerFunc) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    log.Println("Authentication start")
-    f(w, r)
-    log.Println("Authentication end")
-  }
+func authenticationMiddleware(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    log.Println(r.RequestURI)
+    next.ServeHTTP(w, r)
+  })
 }
 
 func foo(w http.ResponseWriter, r *http.Request) {
@@ -33,12 +26,10 @@ func bar(w http.ResponseWriter, r *http.Request) {
 
 
 func main(){
-  log.Println("[LOG] Main package run")
-  fmt.Println("[CONSOLE] Main package run")
-  //
-  http.HandleFunc("/foo", authentication(logging(foo)))
-  http.HandleFunc("/bar", authentication(logging(bar)))
+  router := versionOne.NewRouter()
 
-  //
-  http.ListenAndServe(":8008",nil)
+  allowedOrigins := handlers.AllowedOrigins([]string{"*"}) 
+  allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT"})
+  // Launch server with CORS validations
+  log.Fatal(http.ListenAndServe(":8008",handlers.CORS(allowedOrigins, allowedMethods)(router)))
 }
