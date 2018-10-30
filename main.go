@@ -6,7 +6,7 @@ import (
   "net/http"
 //  "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
-  "pmapi/versionOne"
+  "blog-api/versionOne"
 )
 
 func authenticationMiddleware(next http.Handler) http.Handler {
@@ -31,5 +31,5 @@ func main(){
   allowedOrigins := handlers.AllowedOrigins([]string{"*"}) 
   allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT"})
   // Launch server with CORS validations
-  log.Fatal(http.ListenAndServe(":8008",handlers.CORS(allowedOrigins, allowedMethods)(router)))
+  log.Fatal(http.ListenAndServe(":9009",handlers.CORS(allowedOrigins, allowedMethods)(router)))
 }

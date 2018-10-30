@@ -1,6 +1,8 @@
 package versionOne
 
 import (
+  "fmt"
+  "log"
   "net/http"
   "encoding/json"
   "github.com/google/uuid"
@@ -12,7 +14,7 @@ type Controller struct {
 
 
 func (c *Controller) Hello(w http.ResponseWriter, r *http.Request) {
-
+  log.Println("Hello")
   uuidObject,err := uuid.NewRandom()
   if err != nil{
       fmt.Println("Cannot create sessionId")
@@ -26,7 +28,7 @@ func (c *Controller) Hello(w http.ResponseWriter, r *http.Request) {
     SessionId string
   }
 
-  helloResp := HelloResponse{"Welcome to PM API",uuidObject.String()}
+  helloResp := HelloResponse{"Welcome to Blog API",uuidObject.String()}
 
   result, err := json.Marshal(helloResp)
   if err != nil {
