@@ -84,7 +84,9 @@ func createSesion() Session {
 	if err != nil {
 		log.Fatal(err)
 	}
-  session := Session{sessionId, owner, createat}
+  layout := "Mon, 01/02/06, 03:04PM"
+   t, _ := time.Parse(layout, createat)
+  session := Session{sessionId, owner, t}
   return session
 }
 
