@@ -4,11 +4,16 @@ import "time"
 
 type User struct {
   ID string
-  username string
-  password string
+  Username string
+  Password string
   Enabled bool
-  email string
-  introdution string
+  Email string
+  Introdution string
+}
+type Session struct {
+  ID string
+  OwnerId string
+  CreatedAt time.Time
 }
 
 type Tag struct {
