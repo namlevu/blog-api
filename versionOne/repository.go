@@ -62,7 +62,7 @@ func createSesion() Session {
       fmt.Println("Cannot create sessionId")
   }
 
-  _, err = stmt.Exec(uuidObject.String(), "admin" ,createAt))
+  _, err = stmt.Exec(uuidObject.String(), "admin" ,createAt)
   if err != nil {
     log.Fatal(err)
   }
