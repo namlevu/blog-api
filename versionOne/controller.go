@@ -1,11 +1,9 @@
 package versionOne
 
 import (
-  "fmt"
   "log"
   "net/http"
   "encoding/json"
-  "github.com/google/uuid"
 )
 
 type Controller struct {

@@ -1,12 +1,15 @@
 package versionOne
 
-type Repository struct{}
 import (
   "os"
   "log"
   "database/sql"
   _ "github.com/mattn/go-sqlite3"
+  "github.com/google/uuid"
 )
+
+type Repository struct{}
+
 type Response struct {
   Message string `json:"message"`
 }
