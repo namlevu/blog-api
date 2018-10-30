@@ -1,6 +1,8 @@
 package versionOne
 
 import (
+  "fmt"
+  "time"
   "os"
   "log"
   "database/sql"
@@ -28,7 +30,7 @@ func initialDatabase() {
 	sqlStmt := `
 	create table User (ID text not null primary key, username text, password text, enabled bool, email text, introdution text);
 	delete from User;
-  create table Session (  ID text not null primary key, Owner text, CreatedAt text);
+  create table Session (ID text not null primary key, Owner text, CreatedAt text);
   delete from Session;
 	`
 	_, err = db.Exec(sqlStmt)
@@ -69,23 +71,25 @@ func createSesion() Session {
 
 	tx.Commit()
 
-  stmt, err = db.Prepare("select * from Session where ID = ?")
+  stmt, err = db.Prepare("select ID, Owner, CreatedAt from Session where ID = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
-	var session Session
-	err = stmt.QueryRow(uuidObject.String()).Scan(&Session)
+	var sessionId string
+  var owner string
+  var createat string
+
+	err = stmt.QueryRow(uuidObject.String()).Scan(&sessionId, &owner, &createat) //
 	if err != nil {
 		log.Fatal(err)
 	}
+  session := Session{sessionId, owner, createat}
   return session
 }
 
 func insertUser() User{
-  db, err := sql.Open("sqlite3", DB_NAME)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+  var user User
+  // TODO:
+  return user
 }
