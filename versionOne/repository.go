@@ -1,6 +1,7 @@
 package versionOne
 
 import (
+  "errors"
   "fmt"
   "time"
   "os"
@@ -89,42 +90,57 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
-func (r Repository) InsertUser(u User) (user *User, err error){
-
+func (r Repository) InsertUser(u User) (*User, error){
+  var user User
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
-    return false
+    return user, errors.New("Cannot insert user")
   }
   defer db.Close()
 
   tx, err := db.Begin()
   if err != nil {
-    return false
     log.Fatal(err)
+    return user, errors.New("Cannot insert user")
   }
   stmt, err := tx.Prepare("insert into User(ID, username, password, email, enabled) values(?, ?, ?, ?, true)")
   if err != nil {
     log.Fatal(err)
-    return false
+    return user, errors.New("Cannot insert user")
   }
   defer stmt.Close()
 
   uuidObject,err := uuid.NewRandom()
   if err != nil{
       fmt.Println("Cannot create user id")
-      return false
+      return user, errors.New("Cannot insert user")
   }
 
   _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email)
   if err != nil {
     log.Fatal(err)
-    return false
+    return user, errors.New("Cannot insert user")
   }
 
   tx.Commit()
+  /**/
+  stmt, err := db.Prepare("select * from User where ID = ? ")
+  if err != nil {
+    log.Fatal(err)
+    return user, errors.New("Cannot get inserted user infomation")
+  }
+  defer stmt.Close()
 
-  return true
+  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Introdution) //
+  if err != nil {
+    log.Fatal(err)
+    return user, errors.New("Cannot get inserted user infomation")
+  }
+
+  /**/
+
+  return user, nil
 }
 
 func (r Repository) Login(u User) bool {
