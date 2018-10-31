@@ -134,7 +134,7 @@ func (r Repository) Login(u User) bool {
   }
   defer db.Close()
   //
-  stmt, err = db.Prepare("select ID from User where username = ? and password = ? ")
+  stmt, err := db.Prepare("select ID from User where username = ? and password = ? ")
   if err != nil {
     log.Fatal(err)
   }
