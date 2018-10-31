@@ -96,7 +96,7 @@ func (r Repository) InsertUser(u User) (User, error){
   // validate
   log.Println(u)
   if u.Username == "" ||u.Password == "" || u.Email == "" {
-    return user, error.New("User infomation is invalid")
+    return user, errors.New("User infomation is invalid")
   }
   if u.Introdution == "" {
     u.Introdution = " "
