@@ -90,7 +90,7 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
-func (r Repository) InsertUser(u User) (*User, error){
+func (r Repository) InsertUser(u User) (User, error){
   var user User
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
@@ -125,14 +125,14 @@ func (r Repository) InsertUser(u User) (*User, error){
 
   tx.Commit()
   /**/
-  stmt, err := db.Prepare("select * from User where ID = ? ")
+  stmt, err = db.Prepare("select id, username, email from User where ID = ? ")
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
   }
   defer stmt.Close()
 
-  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Introdution) //
+  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email) //
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
