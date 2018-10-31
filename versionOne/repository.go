@@ -94,9 +94,6 @@ func (r Repository) CreateSesion() Session {
 func (r Repository) InsertUser(u User) (User, error){
   var user User
   // validate
-  if u == nil {
-    return user, error.New("User infomation is invalid")
-  }
   if u.Username == "" ||u.Password == "" || u.Email == "" {
     return user, error.New("User infomation is invalid")
   }
