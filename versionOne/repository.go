@@ -101,7 +101,7 @@ func (r Repository) InsertUser(u User) (User, error){
   if u.Introdution == "" {
     u.Introdution = " "
   }
-  if u.Enabled == nil {
+  if !u.Enabled {
     u.Enabled = true
   }
   // connect to db
