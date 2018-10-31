@@ -138,7 +138,7 @@ func (r Repository) InsertUser(u User) (User, error){
 
   tx.Commit()
   /**/
-  stmt, err = db.Prepare("select id, username, email from User where ID = ? ")
+  stmt, err = db.Prepare("select id, username, email, introdution from User where ID = ? ")
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
