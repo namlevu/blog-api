@@ -90,25 +90,17 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
-func isNilOrEmpty(s string){
-  if s == nil {
-    return true
-  }
-  if len(s) == 0 {
-    return true
-  }
-  return false
-}
+
 func (r Repository) InsertUser(u User) (User, error){
   var user User
   // validate
   if u == nil {
     return user, error.New("User infomation is invalid")
   }
-  if isNilOrEmpty(u.Username) || isNilOrEmpty(u.Password) || isNilOrEmpty(u.Email) {
+  if u.Username == "" ||u.Password == "" || u.Email == "" {
     return user, error.New("User infomation is invalid")
   }
-  if isNilOrEmpty(u.Introdution) {
+  if isNilOrEmpty(u.Introdution == "") {
     u.Introdution = ""
   }
   if u.Enabled == nil {
