@@ -135,7 +135,7 @@ func (r Repository) InsertUser(u User) User{
     log.Fatal(err)
   }
 
-  insertedUser := User{userId, username, email}
+  insertedUser := User{ID:userId, Username:username, Email:email}
 
   return insertedUser
 }
