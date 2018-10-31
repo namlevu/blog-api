@@ -36,6 +36,11 @@ func (c *Controller) Hello(w http.ResponseWriter, r *http.Request) {
   return
 }
 
+type UserResponse struct {
+  Message string
+  User User
+}
+
 func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
   log.Println("CreateUser")
   var user User
@@ -60,18 +65,19 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
   }
 
   log.Println(user)
-  success := c.Repository.InsertUser(user) // adds the user to the DB
-  if !success {
+  createdUser,err := c.Repository.InsertUser(user) // adds the user to the DB
+  if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
+    response := UserResponse{Message: "ERROR: Create user failed"}
+    data, _ := json.Marshal(response)
+    w.Write(data)
     return
   }
 
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
   w.WriteHeader(http.StatusCreated)
-  type UserResponse struct {
-    Message string
-  }
-  response := UserResponse{"Create user success"}
+
+  response := UserResponse{"Create user success", createdUser}
   data, _ := json.Marshal(response)
   w.Write(data)
   /**/

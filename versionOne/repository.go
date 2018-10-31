@@ -89,7 +89,7 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
-func (r Repository) InsertUser(u User) bool{
+func (r Repository) InsertUser(u User) (user *User, err error){
 
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
