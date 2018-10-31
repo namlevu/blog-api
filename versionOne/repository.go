@@ -90,8 +90,31 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
+func isNilOrEmpty(s string){
+  if s == nil {
+    return true
+  }
+  if len(s) == 0 {
+    return true
+  }
+  return false
+}
 func (r Repository) InsertUser(u User) (User, error){
   var user User
+  // validate
+  if u == nil {
+    return user, error.New("User infomation is invalid")
+  }
+  if isNilOrEmpty(u.Username) || isNilOrEmpty(u.Password) || isNilOrEmpty(u.Email) {
+    return user, error.New("User infomation is invalid")
+  }
+  if isNilOrEmpty(u.Introdution) {
+    u.Introdution = ""
+  }
+  if u.Enabled == nil {
+    u.Enabled = true
+  }
+  // connect to db
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
@@ -104,7 +127,7 @@ func (r Repository) InsertUser(u User) (User, error){
     log.Fatal(err)
     return user, errors.New("Cannot insert user")
   }
-  stmt, err := tx.Prepare("insert into User(ID, username, password, email, enabled) values(?, ?, ?, ?, true)")
+  stmt, err := tx.Prepare("insert into User(ID, username, password, email, enabled, introdution) values(?, ?, ?, ?, ?, ?)")
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot insert user")
@@ -117,7 +140,7 @@ func (r Repository) InsertUser(u User) (User, error){
       return user, errors.New("Cannot insert user")
   }
 
-  _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email)
+  _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email, u.Enabled, u.Introdution)
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot insert user")
@@ -132,7 +155,7 @@ func (r Repository) InsertUser(u User) (User, error){
   }
   defer stmt.Close()
 
-  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email) //
+  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Introdution) //
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
