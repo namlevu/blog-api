@@ -94,11 +94,12 @@ func (r Repository) CreateSesion() Session {
 func (r Repository) InsertUser(u User) (User, error){
   var user User
   // validate
+  log.Println(u)
   if u.Username == "" ||u.Password == "" || u.Email == "" {
     return user, error.New("User infomation is invalid")
   }
-  if isNilOrEmpty(u.Introdution == "") {
-    u.Introdution = ""
+  if u.Introdution == "" {
+    u.Introdution = " "
   }
   if u.Enabled == nil {
     u.Enabled = true
