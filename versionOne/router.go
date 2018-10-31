@@ -24,6 +24,12 @@ var routes = Routes {
     "/hello",
     controller.Hello,
   },
+  Route {
+    "CreateUser",
+    "POST",
+    "/users",
+    controller.CreateUser,
+  },
 }
 func Test(){
   log.Println("Test func called")

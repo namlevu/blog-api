@@ -18,9 +18,11 @@ type Response struct {
 
 const DB_NAME string = "./blog.v10.db"
 
-func InitialDatabase() {
+func RemoveDatabase() {
   os.Remove(DB_NAME)
+}
 
+func InitialDatabase() {
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
@@ -28,10 +30,8 @@ func InitialDatabase() {
   defer db.Close()
 
   sqlStmt := `
-  create table User (ID text not null primary key, username text, password text, enabled bool, email text, introdution text);
-  delete from User;
-  create table Session (ID text not null primary key, Owner text, CreatedAt integer);
-  delete from Session;
+  CREATE TABLE IF NOT EXISTS User (ID text not null primary key, username text, password text, enabled bool, email text, introdution text);
+  CREATE TABLE IF NOT EXISTS Session (ID text not null primary key, Owner text, CreatedAt integer);
   `
   _, err = db.Exec(sqlStmt)
   if err != nil {
@@ -41,7 +41,7 @@ func InitialDatabase() {
   return
 }
 
-func CreateSesion() Session {
+func (r Repository) CreateSesion() Session {
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
@@ -89,8 +89,76 @@ func CreateSesion() Session {
   return session
 }
 
-func InsertUser() User{
-  var user User
-  // TODO:
-  return user
+func (r Repository) InsertUser(u User) User{
+
+  db, err := sql.Open("sqlite3", DB_NAME)
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer db.Close()
+
+  tx, err := db.Begin()
+  if err != nil {
+    log.Fatal(err)
+  }
+  stmt, err := tx.Prepare("insert into User(ID, username, password, email) values(?, ?, ?, ?)")
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer stmt.Close()
+
+  uuidObject,err := uuid.NewRandom()
+  if err != nil{
+      fmt.Println("Cannot create user id")
+  }
+
+  _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  tx.Commit()
+
+  /* get inserted user */
+  stmt, err = db.Prepare("select ID, username, email from User where ID = ?")
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer stmt.Close()
+
+  var userId string
+  var username string
+  var email string
+
+  err = stmt.QueryRow(uuidObject.String()).Scan(&userId, &username, &email) //
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  insertedUser := User{userId, username, email}
+
+  return insertedUser
+}
+
+func (r Repository) Login(u User) bool {
+  db, err := sql.Open("sqlite3", DB_NAME)
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer db.Close()
+  //
+  stmt, err = db.Prepare("select ID from User where username = ? and password = ? ")
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer stmt.Close()
+
+  var userId string
+
+  err = stmt.QueryRow(u.Username, u.Password).Scan(&userId) //
+  if err != nil {
+    log.Fatal(err)
+  }
+  //
+  return true
 }
