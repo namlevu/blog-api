@@ -27,8 +27,8 @@ func bar(w http.ResponseWriter, r *http.Request) {
 
 func main(){
   router := versionOne.NewRouter()
-  versionOne.initialDatabase()
-  
+  versionOne.InitialDatabase()
+
   allowedOrigins := handlers.AllowedOrigins([]string{"*"})
   allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT"})
   // Launch server with CORS validations

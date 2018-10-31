@@ -22,7 +22,7 @@ func (c *Controller) Hello(w http.ResponseWriter, r *http.Request) {
     CurrentSession Session
   }
 
-  var currentSession = createSesion()
+  var currentSession = CreateSesion()
   helloResp := HelloResponse{"Create session OK",currentSession}
 
   result, err := json.Marshal(helloResp)

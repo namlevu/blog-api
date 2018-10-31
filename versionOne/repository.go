@@ -18,30 +18,30 @@ type Response struct {
 
 const DB_NAME string = "./blog.v10.db"
 
-func initialDatabase() {
+func InitialDatabase() {
   os.Remove(DB_NAME)
 
-	db, err := sql.Open("sqlite3", DB_NAME)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+  db, err := sql.Open("sqlite3", DB_NAME)
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer db.Close()
 
-	sqlStmt := `
-	create table User (ID text not null primary key, username text, password text, enabled bool, email text, introdution text);
-	delete from User;
-  create table Session (ID text not null primary key, Owner text, CreatedAt text);
+  sqlStmt := `
+  create table User (ID text not null primary key, username text, password text, enabled bool, email text, introdution text);
+  delete from User;
+  create table Session (ID text not null primary key, Owner text, CreatedAt integer);
   delete from Session;
-	`
-	_, err = db.Exec(sqlStmt)
-	if err != nil {
-		log.Printf("%q: %s\n", err, sqlStmt)
-		return
-	}
+  `
+  _, err = db.Exec(sqlStmt)
+  if err != nil {
+    log.Printf("%q: %s\n", err, sqlStmt)
+    return
+  }
   return
 }
 
-func createSesion() Session {
+func CreateSesion() Session {
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
@@ -49,16 +49,16 @@ func createSesion() Session {
   defer db.Close()
 
   tx, err := db.Begin()
-	if err != nil {
-		log.Fatal(err)
-	}
-	stmt, err := tx.Prepare("insert into Session(ID, Owner, CreatedAt) values(?, ?, ?)")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
+  if err != nil {
+    log.Fatal(err)
+  }
+  stmt, err := tx.Prepare("insert into Session(ID, Owner, CreatedAt) values(?, ?, ?)")
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer stmt.Close()
 	//
-  var createAt = time.Now().String()
+  var createAt = time.Now().Unix()
   uuidObject,err := uuid.NewRandom()
   if err != nil{
       fmt.Println("Cannot create sessionId")
@@ -69,28 +69,27 @@ func createSesion() Session {
     log.Fatal(err)
   }
 
-	tx.Commit()
+  tx.Commit()
 
   stmt, err = db.Prepare("select ID, Owner, CreatedAt from Session where ID = ?")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer stmt.Close()
-	var sessionId string
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer stmt.Close()
+  var sessionId string
   var owner string
-  var createat string
+  var createdat int64
 
-	err = stmt.QueryRow(uuidObject.String()).Scan(&sessionId, &owner, &createat) //
-	if err != nil {
-		log.Fatal(err)
-	}
-  layout := "Mon, 01/02/06, 03:04PM"
-   t, _ := time.Parse(layout, createat)
-  session := Session{sessionId, owner, t}
+  err = stmt.QueryRow(uuidObject.String()).Scan(&sessionId, &owner, &createdat) //
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  session := Session{sessionId, owner, time.Unix(createdat, 0)}
   return session
 }
 
-func insertUser() User{
+func InsertUser() User{
   var user User
   // TODO:
   return user

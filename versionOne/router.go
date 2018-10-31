@@ -25,7 +25,9 @@ var routes = Routes {
     controller.Hello,
   },
 }
-
+func Test(){
+  log.Println("Test func called")
+}
 // NewRouter configures a new router to the API
 func NewRouter() *mux.Router {
     router := mux.NewRouter().StrictSlash(true)
