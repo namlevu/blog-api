@@ -103,7 +103,7 @@ func (r Repository) InsertUser(u User) bool{
     return false
     log.Fatal(err)
   }
-  stmt, err := tx.Prepare("insert into User(ID, username, password, email) values(?, ?, ?, ?)")
+  stmt, err := tx.Prepare("insert into User(ID, username, password, email, enabled) values(?, ?, ?, ?, true)")
   if err != nil {
     log.Fatal(err)
     return false

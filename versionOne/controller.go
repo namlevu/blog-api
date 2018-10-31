@@ -58,6 +58,7 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
       return
     }
   }
+  
   log.Println(user)
   success := c.Repository.InsertUser(user) // adds the user to the DB
   if !success {
@@ -67,6 +68,10 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
 
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
   w.WriteHeader(http.StatusCreated)
+  resule := {
+    "message":"create user successful"
+  }
+  w.Write()
   /**/
   return
 }
