@@ -69,7 +69,7 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
   w.WriteHeader(http.StatusCreated)
   type UserResponse struct {
-    Message string,
+    Message string
   }
   response := UserResponse{"Create user success"}
   data, _ := json.Marshal(response)
