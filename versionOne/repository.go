@@ -89,55 +89,42 @@ func (r Repository) CreateSesion() Session {
   return session
 }
 
-func (r Repository) InsertUser(u User) User{
+func (r Repository) InsertUser(u User) bool{
 
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
+    return false
   }
   defer db.Close()
 
   tx, err := db.Begin()
   if err != nil {
+    return false
     log.Fatal(err)
   }
   stmt, err := tx.Prepare("insert into User(ID, username, password, email) values(?, ?, ?, ?)")
   if err != nil {
     log.Fatal(err)
+    return false
   }
   defer stmt.Close()
 
   uuidObject,err := uuid.NewRandom()
   if err != nil{
       fmt.Println("Cannot create user id")
+      return false
   }
 
   _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email)
   if err != nil {
     log.Fatal(err)
+    return false
   }
 
   tx.Commit()
 
-  /* get inserted user */
-  stmt, err = db.Prepare("select ID, username, email from User where ID = ?")
-  if err != nil {
-    log.Fatal(err)
-  }
-  defer stmt.Close()
-
-  var userId string
-  var username string
-  var email string
-
-  err = stmt.QueryRow(uuidObject.String()).Scan(&userId, &username, &email) //
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  insertedUser := User{ID:userId, Username:username, Email:email}
-
-  return insertedUser
+  return true
 }
 
 func (r Repository) Login(u User) bool {

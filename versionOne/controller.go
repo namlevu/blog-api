@@ -59,8 +59,8 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
     }
   }
   log.Println(user)
-  insertedUser := c.Repository.InsertUser(user) // adds the user to the DB
-  if insertedUser == nil {
+  success := c.Repository.InsertUser(user) // adds the user to the DB
+  if !success {
     w.WriteHeader(http.StatusInternalServerError)
     return
   }
