@@ -64,7 +64,7 @@ func (r Repository) CreateSesion() Session {
   if err != nil {
     log.Fatal(err)
   }
-  stmt, err := tx.Prepare("insert into Session(ID, Owner, CreatedAt) values(?, ?, ?)")
+  stmt, err := tx.Prepare("insert into Session(ID, CreatedAt) values(?, ?)")
   if err != nil {
     log.Fatal(err)
   }
@@ -76,7 +76,7 @@ func (r Repository) CreateSesion() Session {
       fmt.Println("Cannot create sessionId")
   }
 
-  _, err = stmt.Exec(uuidObject.String(), "admin" ,createAt)
+  _, err = stmt.Exec(uuidObject.String() ,createAt)
   if err != nil {
     log.Fatal(err)
   }
@@ -163,7 +163,9 @@ func (r Repository) InsertUser(u User) (User, error){
 
   return user, nil
 }
-
+func GetUser(db DB, id string) (User, error) {
+  //
+}
 func (r Repository) Login(u User) (User, error) {
   var user User
 
