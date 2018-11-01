@@ -9,6 +9,7 @@ import (
   "database/sql"
   _ "github.com/mattn/go-sqlite3"
   "github.com/google/uuid"
+  "golang.org/x/crypto/bcrypt"
 )
 
 type Repository struct{}
@@ -21,6 +22,16 @@ const DB_NAME string = "./blog.v10.db"
 
 func RemoveDatabase() {
   os.Remove(DB_NAME)
+}
+
+func HashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+    return err == nil
 }
 
 func InitialDatabase() {
@@ -130,7 +141,9 @@ func (r Repository) InsertUser(u User) (User, error){
       return user, errors.New("Cannot insert user")
   }
   log.Println("Repository u.Enabled: ", u.Enabled)
-  _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email, u.Enabled, u.Introdution)
+  hashpassword,_ := HashPassword(u.Password)
+
+  _, err = stmt.Exec(uuidObject.String(), u.Username , hashpassword, u.Email, u.Enabled, u.Introdution)
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot insert user")
@@ -163,18 +176,24 @@ func (r Repository) Login(u User) bool {
   }
   defer db.Close()
   //
-  stmt, err := db.Prepare("select ID from User where username = ? and password = ? ")
+  stmt, err := db.Prepare("select ID, password from User where username = ? ")
   if err != nil {
     log.Fatal(err)
+    return false
   }
   defer stmt.Close()
 
   var userId string
+  var hashpassword string
 
-  err = stmt.QueryRow(u.Username, u.Password).Scan(&userId) //
+  err = stmt.QueryRow(u.Username).Scan(&userId, &hashpassword) //
   if err != nil {
     log.Fatal(err)
+    return false
   }
-  //
-  return true
+
+  if CheckPasswordHash( u.Password, hashpassword) {
+    return true
+  }
+  return false
 }
