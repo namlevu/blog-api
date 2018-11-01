@@ -58,7 +58,7 @@ func (r Repository) CreateSesion() Session {
     log.Fatal(err)
   }
   defer stmt.Close()
-	//
+  //
   var createAt = time.Now().Unix()
   uuidObject,err := uuid.NewRandom()
   if err != nil{
@@ -94,16 +94,16 @@ func (r Repository) CreateSesion() Session {
 func (r Repository) InsertUser(u User) (User, error){
   var user User
   // validate
-  log.Println(u)
+  log.Println("repository", u)
   if u.Username == "" ||u.Password == "" || u.Email == "" {
     return user, errors.New("User infomation is invalid")
   }
   if u.Introdution == "" {
     u.Introdution = " "
   }
-  if !u.Enabled {
-    u.Enabled = true
-  }
+  //if !u.Enabled {
+  //  u.Enabled = true
+  //}
   // connect to db
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
@@ -129,7 +129,7 @@ func (r Repository) InsertUser(u User) (User, error){
       fmt.Println("Cannot create user id")
       return user, errors.New("Cannot insert user")
   }
-
+  log.Println("Repository u.Enabled: ", u.Enabled)
   _, err = stmt.Exec(uuidObject.String(), u.Username , u.Password, u.Email, u.Enabled, u.Introdution)
   if err != nil {
     log.Fatal(err)
@@ -138,14 +138,14 @@ func (r Repository) InsertUser(u User) (User, error){
 
   tx.Commit()
   /**/
-  stmt, err = db.Prepare("select id, username, email, introdution from User where ID = ? ")
+  stmt, err = db.Prepare("select id, username, email, enabled, introdution from User where ID = ? ")
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
   }
   defer stmt.Close()
 
-  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Introdution) //
+  err = stmt.QueryRow(uuidObject.String()).Scan(&user.ID, &user.Username, &user.Email, &user.Enabled, &user.Introdution) //
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot get inserted user infomation")
