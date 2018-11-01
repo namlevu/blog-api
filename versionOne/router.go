@@ -30,6 +30,12 @@ var routes = Routes {
     "/users",
     controller.CreateUser,
   },
+  Route {
+    "Login",
+    "POST",
+    "/login",
+    controller.Login,
+  },
 }
 func Test(){
   log.Println("Test func called")

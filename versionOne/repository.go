@@ -14,9 +14,9 @@ import (
 
 type Repository struct{}
 
-type Response struct {
-  Message string `json:"message"`
-}
+//type Response struct {
+//  Message string `json:"message"`
+//}
 
 const DB_NAME string = "./blog.v10.db"
 
@@ -112,10 +112,7 @@ func (r Repository) InsertUser(u User) (User, error){
   if u.Introdution == "" {
     u.Introdution = " "
   }
-  //if !u.Enabled {
-  //  u.Enabled = true
-  //}
-  // connect to db
+
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
@@ -143,14 +140,14 @@ func (r Repository) InsertUser(u User) (User, error){
   log.Println("Repository u.Enabled: ", u.Enabled)
   hashpassword,_ := HashPassword(u.Password)
 
-  _, err = stmt.Exec(uuidObject.String(), u.Username , hashpassword, u.Email, u.Enabled, u.Introdution)
+  _, err = stmt.Exec(uuidObject.String(), u.Username, hashpassword, u.Email, u.Enabled, u.Introdution)
   if err != nil {
     log.Fatal(err)
     return user, errors.New("Cannot insert user")
   }
 
   tx.Commit()
-  /**/
+
   stmt, err = db.Prepare("select id, username, email, enabled, introdution from User where ID = ? ")
   if err != nil {
     log.Fatal(err)
@@ -164,36 +161,36 @@ func (r Repository) InsertUser(u User) (User, error){
     return user, errors.New("Cannot get inserted user infomation")
   }
 
-  /**/
-
   return user, nil
 }
 
-func (r Repository) Login(u User) bool {
+func (r Repository) Login(u User) (User, error) {
+  var user User
+
   db, err := sql.Open("sqlite3", DB_NAME)
   if err != nil {
     log.Fatal(err)
+    return User{}, errors.New("Cannot connect with DB")
   }
   defer db.Close()
   //
-  stmt, err := db.Prepare("select ID, password from User where username = ? ")
+  stmt, err := db.Prepare("select * from User where username = ? ")
   if err != nil {
     log.Fatal(err)
-    return false
+    return User{}, errors.New("Cannot find user")
   }
   defer stmt.Close()
 
-  var userId string
-  var hashpassword string
-
-  err = stmt.QueryRow(u.Username).Scan(&userId, &hashpassword) //
+  err = stmt.QueryRow(u.Username).Scan(&user.ID, &user.Username, &user.Password, &user.Enabled, &user.Email, &user.Introdution) //
   if err != nil {
     log.Fatal(err)
-    return false
+    return User{}, errors.New("Cannot retrieve data")
   }
 
-  if CheckPasswordHash( u.Password, hashpassword) {
-    return true
+  if CheckPasswordHash( u.Password, user.Password) {
+    if user.Enabled {
+      return user, nil
+    }
   }
-  return false
+  return User{}, errors.New("Cannot login")
 }
