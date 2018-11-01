@@ -32,3 +32,6 @@ const CREATE_DATABASE_STMT =  `
 const INSERT_SESSION_STMT = "insert into Session(ID, CreatedAt) values(?, ?)"
 const INSERT_SESSION_FAILED_MSG = "Cannot create session"
 const USER_INFO_INVALID_MSG = "User infomation is invalid"
+
+const UPDATE_SESSION_STMT = "UPDATE Session SET Owner = ? WHERE ID = ?"
+const UPDATE_SESSION_FAILED_MSG = "Update Session Failed"

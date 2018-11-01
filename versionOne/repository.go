@@ -50,6 +50,33 @@ func IsUserValid(u User) bool {
 	return true
 }
 
+func UpdateSession(db *sql.DB, userId string, sessionId string) error{
+  if userId == "" || sessionId == "" {
+    return errors.New(UPDATE_SESSION_FAILED_MSG)
+  }
+
+  tx, err := db.Begin()
+  if err != nil {
+    log.Fatal(err)
+    return err
+  }
+  stmt, err := tx.Prepare(UPDATE_SESSION_STMT)
+  if err != nil {
+	log.Fatal(err)
+	return err
+  }
+  defer stmt.Close()
+
+  _, err = stmt.Exec(userId, sessionId)
+  if err != nil {
+    log.Fatal(err)
+    return err
+  }
+  tx.Commit()
+  return nil
+}
+
+
 func (r Repository) CreateSesion() string {
 	db, err := sql.Open(SQLITE, DB_NAME)
 	if err != nil {
@@ -83,7 +110,7 @@ func (r Repository) CreateSesion() string {
 	return sessionIdObj.String() // sessionId
 }
 
-func GetUserById(db DB, userId string) (User, error) {
+func GetUserById(db *sql.DB, userId string) (User, error) {
 	var user User
 	stmt, err := db.Prepare(SELECT_USER_BY_ID)
 	if err != nil {
@@ -155,7 +182,7 @@ func (r Repository) InsertUser(u User) (User, error) {
 	return user, nil
 }
 
-func (r Repository) Login(u User) (User, error) {
+func (r Repository) Login(u User, sessionId string) (User, error) {
 	var user User
 
 	db, err := sql.Open(SQLITE, DB_NAME)
@@ -185,6 +212,7 @@ func (r Repository) Login(u User) (User, error) {
 
 	if CheckPasswordHash(u.Password, user.Password) {
 		if user.Enabled {
+			UpdateSession(db, user.ID, sessionId)
 			return user, nil
 		}
 	}

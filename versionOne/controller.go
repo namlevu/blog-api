@@ -86,11 +86,14 @@ func (c *Controller) CreateUser(w http.ResponseWriter, r *http.Request) {
 
   return
 }
+
 func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
   var user User
 //  headerStatus := http.StatusOK
   message := "Login successful"
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+  sessionId := r.Header.Get("SessionID")
 
   body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)) // read the body of the request
   if err != nil {
@@ -105,7 +108,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
       log.Fatalln("Error Login unmarshalling data", err)
     }
   }
-  loginedUser,err := c.Repository.Login(user)
+  loginedUser,err := c.Repository.Login(user, sessionId)
   if err != nil {
     // error handle
     message = fmt.Sprintf("%v", err)
@@ -116,6 +119,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  //UpdateSession(db, sessionId, loginedUser.ID)
   w.WriteHeader(http.StatusOK)
   response := Response{message, loginedUser}
   data, _ := json.Marshal(response)
